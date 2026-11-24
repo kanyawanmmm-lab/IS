@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DekDurian - คลังข้อสอบเข้าศึกษาต่อ ม.1</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt, Kanit & Mali -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Mali:wght@500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FCEEA8;
+            --accent-primary: #FF85BD;
+            --accent-secondary: #B1E4E3;
+            --card-radius: 1.5rem;
+            --card-shadow: 4px 4px 0px #1e293b;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-main);
+            color: #1e293b;
+            transition: background-color 0.3s ease;
+        }
+
+        .font-cute {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .font-handwriting {
+            font-family: 'Mali', cursive;
+        }
+
+        /* Background Patterns */
+        .bg-pattern-plain {
+            background-color: var(--bg-main);
+            background-image: none;
+        }
+        .bg-pattern-dots {
+            background-color: var(--bg-main);
+            background-image: radial-gradient(rgba(30, 41, 59, 0.16) 2.2px, transparent 2.2px);
+            background-size: 24px 24px;
+        }
+        .bg-pattern-grid {
+            background-color: var(--bg-main);
+            background-image: 
+                linear-gradient(to right, rgba(30, 41, 59, 0.09) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(30, 41, 59, 0.09) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        /* Dynamic Accent Classes */
+        .bg-accent-primary {
+            background-color: var(--accent-primary) !important;
+        }
+        .bg-accent-secondary {
+            background-color: var(--accent-secondary) !important;
+        }
+        .bg-accent-cream {
+            background-color: var(--bg-main) !important;
+        }
+
+        /* Neo-Brutalism Cute Shadows & Borders */
+        .neo-box {
+            border: 2.5px solid #1e293b;
+            box-shadow: var(--card-shadow);
+            border-radius: var(--card-radius);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-radius 0.2s ease, background-color 0.25s ease;
+        }
+        .neo-btn {
+            border: 2px solid #1e293b;
+            box-shadow: 3px 3px 0px #1e293b;
+            transition: all 0.12s ease;
+        }
+        .neo-btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 4px 4px 0px #1e293b;
+        }
+        .neo-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #1e293b;
+        }
+
+        /* Floating Stickers & Ambient Durians */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+            50% { transform: translateY(-9px) rotate(var(--rot, 0deg)); }
+        }
+        .sticker-item {
+            position: fixed;
+            z-index: 30;
+            user-select: none;
+            cursor: grab;
+            animation: floatSlow 3.8s ease-in-out infinite;
+            filter: drop-shadow(2px 3px 0px rgba(30, 41, 59, 0.25));
+        }
+        .sticker-item:active {
+            cursor: grabbing;
+            animation: none;
+        }
+        .ambient-durian {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.28;
+            animation: floatSlow 5.5s ease-in-out infinite;
+        }
+
+        /* Modal Animation */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop {
+            animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body id="app-body" class="bg-pattern-dots min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Ambient Floating Durian Background Layer -->
+    <div id="ambient-durian-layer" class="hidden pointer-events-none fixed inset-0 z-0 overflow-hidden"></div>
+
+    <!-- Interactive Draggable Sticker Layer -->
+    <div id="sticker-layer" class="pointer-events-none fixed inset-0 z-30 overflow-hidden"></div>
+
+    <!-- Custom Confirmation / Notification Modal (No alert/confirm) -->
+    <div id="dialog-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white neo-box max-w-sm w-full p-6 animate-pop text-center">
+            <div id="dialog-icon" class="flex justify-center mb-2 text-4xl">🍈</div>
+            <h4 id="dialog-title" class="text-lg font-bold text-slate-800 mb-1">แจ้งเตือนจาก DekDurian</h4>
+            <p id="dialog-message" class="text-slate-600 text-sm mb-6">ข้อความแจ้งเตือน</p>
+            <div id="dialog-buttons" class="flex justify-center gap-3">
+                <button id="dialog-cancel-btn" onclick="closeDialog()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl neo-btn text-sm">ยกเลิก</button>
+                <button id="dialog-confirm-btn" class="flex-1 py-2.5 bg-accent-primary text-slate-900 font-bold rounded-xl neo-btn text-sm">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navbar (#B1E4E3 Secondary Container) -->
+    <header class="bg-accent-secondary border-b-[3px] border-slate-800 sticky top-0 z-40 shadow-xs transition-colors">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap justify-between items-center gap-3">
+            
+            <!-- Brand Logo & Monocle Durian SVG -->
+            <div class="flex items-center gap-3.5">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 bg-[#FCEEA8] rounded-2xl border-2 border-slate-800 shadow-[3px_3px_0px_#1e293b] flex items-center justify-center shrink-0 overflow-hidden">
+                    <!-- Custom SVG: Cute Spiky Durian with Face & Monocle -->
+                    <svg viewBox="0 0 110 110" class="w-13 h-13 sm:w-14 sm:h-14" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Durian Stem -->
+                        <path d="M51 20 C51 12, 59 9, 63 12 C60 15, 58 18, 58 22 Z" fill="#6D4C41" stroke="#1e293b" stroke-width="2.6" stroke-linejoin="round"/>
+                        
+                        <!-- Outer Durian Spikes Ring -->
+                        <g fill="#7CB342" stroke="#1e293b" stroke-width="2.6" stroke-linejoin="round">
+                            <polygon points="44,23 50,13 56,23"/>
+                            <polygon points="56,23 62,14 68,25"/>
+                            <polygon points="31,28 35,17 43,25"/>
+                            <polygon points="68,26 76,18 79,30"/>
+                            <polygon points="23,37 14,32 21,45"/>
+                            <polygon points="19,50 9,50 19,60"/>
+                            <polygon points="21,64 12,69 24,74"/>
+                            <polygon points="28,78 21,86 35,85"/>
+                            <polygon points="87,37 96,32 89,45"/>
+                            <polygon points="91,50 101,50 91,60"/>
+                            <polygon points="89,64 98,69 86,74"/>
+                            <polygon points="82,78 89,86 75,85"/>
+                            <polygon points="38,87 37,97 47,90"/>
+                            <polygon points="50,91 55,100 60,91"/>
+                            <polygon points="63,90 73,97 72,87"/>
+                        </g>
+
+                        <!-- Main Durian Body -->
+                        <ellipse cx="55" cy="56" rx="34" ry="35" fill="#9CCC65" stroke="#1e293b" stroke-width="3"/>
+                        
+                        <!-- Subtle Inner Durian Segment Lines -->
+                        <path d="M55 22 Q43 56 55 90" fill="none" stroke="#689F38" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+                        <path d="M55 22 Q67 56 55 90" fill="none" stroke="#689F38" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+
+                        <!-- Creamy Yellow Face Patch (#FCEEA8) -->
+                        <ellipse cx="55" cy="59" rx="24" ry="21" fill="#FCEEA8" stroke="#1e293b" stroke-width="2.2"/>
+
+                        <!-- Left Eye -->
+                        <circle cx="45" cy="55" r="4.2" fill="#1e293b"/>
+                        <circle cx="43.5" cy="53.5" r="1.5" fill="#FFFFFF"/>
+                        
+                        <!-- Right Eye (Behind Monocle) -->
+                        <circle cx="65" cy="55" r="4.2" fill="#1e293b"/>
+                        <circle cx="63.5" cy="53.5" r="1.5" fill="#FFFFFF"/>
+
+                        <!-- Rosy Cheeks (#FF85BD) -->
+                        <ellipse cx="38.5" cy="62" rx="4.2" ry="2.6" fill="#FF85BD" opacity="0.85"/>
+                        <ellipse cx="71.5" cy="62" rx="4.2" ry="2.6" fill="#FF85BD" opacity="0.85"/>
+
+                        <!-- Cheerful Smile -->
+                        <path d="M50 63 Q55 69 60 63" fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+
+                        <!-- Stylish Monocle on Right Eye (#FF85BD Frame + Glass Shine) -->
+                        <circle cx="65" cy="55" r="10.5" fill="rgba(177, 228, 227, 0.42)" stroke="#FF85BD" stroke-width="3.2"/>
+                        <circle cx="65" cy="55" r="11.8" fill="none" stroke="#1e293b" stroke-width="1.3"/>
+                        <line x1="60" y1="50" x2="63" y2="48" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Monocle Chain -->
+                        <path d="M76.5 56 Q85 65 80 78" fill="none" stroke="#FF85BD" stroke-width="2.4" stroke-dasharray="2.5,2"/>
+                        <circle cx="80" cy="79" r="2" fill="#FF85BD" stroke="#1e293b" stroke-width="1.2"/>
+
+                        <!-- Little Arm Holding a Pink Pencil -->
+                        <path d="M23 62 Q14 68 22 76" fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                        <g transform="translate(13, 62) rotate(-28)">
+                            <rect x="0" y="0" width="6.5" height="20" rx="1.5" fill="#FF85BD" stroke="#1e293b" stroke-width="1.8"/>
+                            <polygon points="0,20 6.5,20 3.25,26" fill="#FCEEA8" stroke="#1e293b" stroke-width="1.8" stroke-linejoin="round"/>
+                            <polygon points="2.2,24 4.3,24 3.25,26" fill="#1e293b"/>
+                        </g>
+
+                        <!-- Little Feet -->
+                        <path d="M45 91 L43 97 M65 91 L67 97" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-2xl sm:text-3xl font-bold font-cute text-slate-900 tracking-tight">DekDurian</h1>
+                        <span class="bg-accent-primary text-slate-900 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-slate-800">ม.1 HUB</span>
+                    </div>
+                    <p id="header-slogan" class="text-slate-700 text-xs sm:text-sm font-medium">คลังข้อสอบเข้า ม.1 สุดคิ้วท์ เตรียมพร้อมพิชิตโรงเรียนในฝัน!</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons (Right Side) -->
+            <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                <button onclick="toggleCustomizer()" class="bg-white hover:bg-[#FCEEA8] text-slate-800 font-semibold px-3.5 py-2.5 rounded-2xl neo-btn text-xs sm:text-sm flex items-center gap-1.5">
+                    <span>🎨</span>
+                    <span>ตกแต่งเว็บ</span>
+                </button>
+                <button onclick="openAddModal()" class="bg-accent-primary text-slate-900 font-bold px-4 py-2.5 rounded-2xl neo-btn text-xs sm:text-sm flex items-center gap-1.5">
+                    <span>➕</span>
+                    <span>เพิ่มชุดข้อสอบ</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Theme & Decoration Customizer Panel -->
+    <div id="customizer-panel" class="hidden fixed top-20 right-4 sm:right-6 z-40 w-[calc(100vw-2rem)] max-w-sm bg-accent-secondary neo-box p-5 animate-pop max-h-[82vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-3 pb-2 border-b-2 border-slate-800">
+            <h3 class="font-bold text-slate-900 flex items-center gap-1.5 text-sm">
+                <span>✨</span> ตกแต่งหน้าเว็บ DekDurian
+            </h3>
+            <button onclick="toggleCustomizer()" class="w-7 h-7 bg-white rounded-full border-2 border-slate-800 font-bold text-slate-800 flex items-center justify-center text-sm hover:bg-[#FF85BD]">&times;</button>
+        </div>
+
+        <div class="space-y-4 text-xs">
+            <!-- 1. Primary Accent Emphasis Switcher -->
+            <div>
+                <label class="block font-bold text-slate-800 mb-1.5">1. สลับโทนสีหลักของปุ่มและไฮไลต์</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setColorTheme('pink')" id="theme-btn-pink" class="theme-btn py-2 px-2 bg-[#FF85BD] rounded-xl border-2 border-slate-800 font-bold flex items-center justify-center gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#FF85BD] border border-slate-800"></span> ชมพูหวาน
+                    </button>
+                    <button onclick="setColorTheme('mint')" id="theme-btn-mint" class="theme-btn py-2 px-2 bg-white rounded-xl border-2 border-slate-800 font-semibold flex items-center justify-center gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#B1E4E3] border border-slate-800"></span> มิ้นท์สดใส
+                    </button>
+                    <button onclick="setColorTheme('cream')" id="theme-btn-cream" class="theme-btn py-2 px-2 bg-white rounded-xl border-2 border-slate-800 font-semibold flex items-center justify-center gap-1">
+                        <span class="w-3 h-3 rounded-full bg-[#FCEEA8] border border-slate-800"></span> ครีมทุเรียน
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. Background Pattern & Floating Durians -->
+            <div>
+                <label class="block font-bold text-slate-800 mb-1.5">2. ลวดลายพื้นหลัง & ทุเรียนลอยฟุ้ง</label>
+                <div class="grid grid-cols-3 gap-2 mb-2">
+                    <button onclick="setBgPattern('plain')" id="bg-btn-plain" class="bg-btn py-1.5 px-2 bg-white rounded-xl border-2 border-slate-800 font-semibold">พื้นเรียบ</button>
+                    <button onclick="setBgPattern('dots')" id="bg-btn-dots" class="bg-btn py-1.5 px-2 bg-[#FF85BD] rounded-xl border-2 border-slate-800 font-bold">จุดไข่ปลา</button>
+                    <button onclick="setBgPattern('grid')" id="bg-btn-grid" class="bg-btn py-1.5 px-2 bg-white rounded-xl border-2 border-slate-800 font-semibold">ตารางสมุด</button>
+                </div>
+                <label class="flex items-center justify-between bg-white px-3 py-2 rounded-xl border-2 border-slate-800 cursor-pointer">
+                    <span class="font-semibold text-slate-800">🍈 เปิดทุเรียนใส่แว่นลอยเป็นฉากหลัง</span>
+                    <input type="checkbox" id="toggle-ambient-durians" onchange="toggleAmbientDurians(this.checked)" class="w-4 h-4 accent-[#FF85BD]">
+                </label>
+            </div>
+
+            <!-- 3. Card Border Radius -->
+            <div>
+                <label class="block font-bold text-slate-800 mb-1.5">3. รูปทรงขอบการ์ด (มน vs เหลี่ยม)</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setCardStyle('0.4rem', '3px 3px 0px #1e293b')" id="rad-btn-0.4rem" class="rad-btn py-1.5 px-2 bg-white rounded-md border-2 border-slate-800 font-semibold">เหลี่ยมเท่</button>
+                    <button onclick="setCardStyle('1.5rem', '4px 4px 0px #1e293b')" id="rad-btn-1.5rem" class="rad-btn py-1.5 px-2 bg-[#FF85BD] rounded-xl border-2 border-slate-800 font-bold">มนกำลังดี</button>
+                    <button onclick="setCardStyle('2.25rem', '6px 6px 0px #1e293b')" id="rad-btn-2.25rem" class="rad-btn py-1.5 px-2 bg-white rounded-2xl border-2 border-slate-800 font-semibold">โค้งนุ่มนิ่ม</button>
+                </div>
+            </div>
+
+            <!-- 4. Custom Sticky Notes / Motivational Quotes on Dashboard -->
+            <div>
+                <label class="block font-bold text-slate-800 mb-1.5">4. แปะโพสต์อิทคำคม / เป้าหมายสอบติด</label>
+                <div class="flex gap-1.5">
+                    <input type="text" id="new-note-input" placeholder="เช่น เป้าหมาย: สอบติดห้อง Gifted!" class="flex-1 px-3 py-1.5 bg-white border-2 border-slate-800 rounded-xl text-xs focus:outline-none">
+                    <button onclick="addStickyNote()" class="bg-[#FF85BD] text-slate-900 font-bold px-3 py-1.5 rounded-xl border-2 border-slate-800 hover:opacity-90">แปะเลย</button>
+                </div>
+            </div>
+
+            <!-- 5. Draggable Stickers -->
+            <div>
+                <div class="flex justify-between items-center mb-1.5">
+                    <label class="font-bold text-slate-800">5. สติ๊กเกอร์ตกแต่ง (ลากย้ายบนจอได้!)</label>
+                    <button onclick="clearStickers()" class="text-[11px] underline text-slate-700 hover:text-rose-600 font-semibold">ล้างทั้งหมด</button>
+                </div>
+                <div class="grid grid-cols-5 gap-1.5 bg-white p-2 rounded-2xl border-2 border-slate-800">
+                    <button onclick="spawnSticker('durian-monocle')" class="flex items-center justify-center hover:scale-125 transition p-1" title="ทุเรียนใส่แว่นข้างเดียว">
+                        <svg viewBox="0 0 60 60" class="w-6 h-6">
+                            <ellipse cx="30" cy="31" rx="20" ry="21" fill="#9CCC65" stroke="#1e293b" stroke-width="3"/>
+                            <ellipse cx="30" cy="33" rx="14" ry="12" fill="#FCEEA8" stroke="#1e293b" stroke-width="2"/>
+                            <circle cx="24" cy="31" r="2.5" fill="#1e293b"/>
+                            <circle cx="36" cy="31" r="2.5" fill="#1e293b"/>
+                            <circle cx="36" cy="31" r="6.5" fill="none" stroke="#FF85BD" stroke-width="2.5"/>
+                        </svg>
+                    </button>
+                    <button onclick="spawnSticker('🍈')" class="text-xl hover:scale-125 transition p-1" title="ทุเรียน">🍈</button>
+                    <button onclick="spawnSticker('⭐')" class="text-xl hover:scale-125 transition p-1" title="ดาววิ้ง">⭐</button>
+                    <button onclick="spawnSticker('✏️')" class="text-xl hover:scale-125 transition p-1" title="ดินสอ">✏️</button>
+                    <button onclick="spawnSticker('👑')" class="text-xl hover:scale-125 transition p-1" title="มงกุฎคนเก่ง">👑</button>
+                </div>
+            </div>
+
+            <!-- 6. Custom Header Slogan -->
+            <div>
+                <label class="block font-bold text-slate-800 mb-1">6. ข้อความใต้โลโก้เว็บ</label>
+                <input type="text" id="slogan-input" oninput="updateSlogan(this.value)" placeholder="พิมพ์สโลแกนของคุณ..." class="w-full px-3 py-1.5 bg-white border-2 border-slate-800 rounded-xl text-xs focus:outline-none">
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full relative z-10">
+        
+        <!-- Top Banner & Search + Difficulty Filter Bar -->
+        <div class="bg-accent-secondary neo-box p-5 sm:p-6 mb-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+            <div class="text-center lg:text-left">
+                <span class="inline-block bg-[#FCEEA8] text-slate-900 text-xs font-bold px-3 py-1 rounded-full border-2 border-slate-800 mb-2">
+                    ✨ รวมครบ 5 วิชาหลัก สอบเข้า ม.1
+                </span>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900">จัดระเบียบคลังข้อสอบในแบบของคุณเอง</h2>
+                <p class="text-slate-700 text-xs sm:text-sm mt-1">เก็บลิงก์ไฟล์ PDF หรือสร้างข้อสอบปรนัยไว้ฝึกทำพร้อมตรวจคะแนนได้ทันที</p>
+            </div>
+            
+            <!-- Search & Difficulty Filter -->
+            <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full lg:w-auto">
+                <select id="difficulty-filter" onchange="renderExams()" class="w-full sm:w-44 px-3.5 py-2.5 bg-white border-2 border-slate-800 rounded-2xl text-xs sm:text-sm font-semibold shadow-[3px_3px_0px_#1e293b] focus:outline-none">
+                    <option value="all">🎯 ทุกระดับความยาก</option>
+                    <option value="พื้นฐาน">🌱 พื้นฐาน</option>
+                    <option value="ปานกลาง">⭐ ปานกลาง</option>
+                    <option value="เข้มข้น (GIFTED/EP)">🔥 เข้มข้น (GIFTED/EP)</option>
+                </select>
+                <div class="w-full sm:w-64 relative">
+                    <input type="text" id="search-input" oninput="renderExams()" placeholder="ค้นหาชื่อข้อสอบ / โรงเรียน..." class="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-slate-800 rounded-2xl text-xs sm:text-sm shadow-[3px_3px_0px_#1e293b] focus:outline-none focus:bg-[#FCEEA8]/40 transition">
+                    <span class="absolute left-3.5 top-2.5 text-base">🔍</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Sticky Notes / Motivational Quotes Board -->
+        <div id="sticky-notes-board" class="hidden mb-7">
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs font-bold text-slate-800 bg-white/90 px-3 py-1 rounded-full border border-slate-800">
+                    📌 บอร์ดเป้าหมาย & คำคมให้กำลังใจ
+                </span>
+                <button onclick="promptQuickStickyNote()" class="text-xs font-bold text-slate-800 underline hover:text-[#d63384]">+ เพิ่มโพสต์อิท</button>
+            </div>
+            <div id="sticky-notes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+                <!-- Sticky notes rendered dynamically -->
+            </div>
+        </div>
+
+        <!-- 5 Core Subjects Filter Tabs -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700 bg-white/80 px-3 py-1 rounded-full border border-slate-800">
+                    📚 เลือกหมวดหมู่รายวิชา (5 วิชาหลัก)
+                </span>
+                <span class="text-xs font-semibold text-slate-700 bg-white/80 px-3 py-1 rounded-full border border-slate-800">
+                    ทั้งหมด <strong id="total-count" class="text-[#d63384]">0</strong> ชุด
+                </span>
+            </div>
+            
+            <div class="flex flex-wrap gap-2.5">
+                <button onclick="filterSubject('all')" id="tab-all" class="subject-tab px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm bg-accent-primary text-slate-900 neo-btn">
+                    🌈 ทั้งหมด
+                </button>
+                <button onclick="filterSubject('วิทยาศาสตร์')" id="tab-วิทยาศาสตร์" class="subject-tab px-4 py-2 rounded-2xl font-semibold text-xs sm:text-sm bg-white text-slate-800 neo-btn">
+                    🧪 วิทยาศาสตร์
+                </button>
+                <button onclick="filterSubject('คณิตศาสตร์')" id="tab-คณิตศาสตร์" class="subject-tab px-4 py-2 rounded-2xl font-semibold text-xs sm:text-sm bg-white text-slate-800 neo-btn">
+                    📐 คณิตศาสตร์
+                </button>
+                <button onclick="filterSubject('ภาษาอังกฤษ')" id="tab-ภาษาอังกฤษ" class="subject-tab px-4 py-2 rounded-2xl font-semibold text-xs sm:text-sm bg-white text-slate-800 neo-btn">
+                    🔤 ภาษาอังกฤษ
+                </button>
+                <button onclick="filterSubject('ภาษาไทย')" id="tab-ภาษาไทย" class="subject-tab px-4 py-2 rounded-2xl font-semibold text-xs sm:text-sm bg-white text-slate-800 neo-btn">
+                    📖 ภาษาไทย
+                </button>
+                <button onclick="filterSubject('สังคมศึกษา')" id="tab-สังคมศึกษา" class="subject-tab px-4 py-2 rounded-2xl font-semibold text-xs sm:text-sm bg-white text-slate-800 neo-btn">
+                    🌍 สังคมศึกษา
+                </button>
+            </div>
+        </div>
+
+        <!-- Exam Cards Grid -->
+        <div id="exam-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic cards injected by JavaScript -->
+        </div>
+
+        <!-- Welcoming Empty State (Shown initially since no exams are preloaded) -->
+        <div id="empty-state" class="bg-white neo-box p-8 sm:p-14 text-center max-w-2xl mx-auto my-6">
+            <div class="w-28 h-28 bg-accent-secondary rounded-full border-[3px] border-slate-800 shadow-[4px_4px_0px_#1e293b] flex items-center justify-center mx-auto mb-5 p-2">
+                <!-- Monocle Durian Mascot Hero Illustration -->
+                <svg viewBox="0 0 110 110" class="w-24 h-24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M51 20 C51 12, 59 9, 63 12 C60 15, 58 18, 58 22 Z" fill="#6D4C41" stroke="#1e293b" stroke-width="2.6" stroke-linejoin="round"/>
+                    <g fill="#7CB342" stroke="#1e293b" stroke-width="2.6" stroke-linejoin="round">
+                        <polygon points="44,23 50,13 56,23"/>
+                        <polygon points="56,23 62,14 68,25"/>
+                        <polygon points="31,28 35,17 43,25"/>
+                        <polygon points="68,26 76,18 79,30"/>
+                        <polygon points="23,37 14,32 21,45"/>
+                        <polygon points="19,50 9,50 19,60"/>
+                        <polygon points="21,64 12,69 24,74"/>
+                        <polygon points="28,78 21,86 35,85"/>
+                        <polygon points="87,37 96,32 89,45"/>
+                        <polygon points="91,50 101,50 91,60"/>
+                        <polygon points="89,64 98,69 86,74"/>
+                        <polygon points="82,78 89,86 75,85"/>
+                        <polygon points="38,87 37,97 47,90"/>
+                        <polygon points="50,91 55,100 60,91"/>
+                        <polygon points="63,90 73,97 72,87"/>
+                    </g>
+                    <ellipse cx="55" cy="56" rx="34" ry="35" fill="#9CCC65" stroke="#1e293b" stroke-width="3"/>
+                    <ellipse cx="55" cy="59" rx="24" ry="21" fill="#FCEEA8" stroke="#1e293b" stroke-width="2.2"/>
+                    <circle cx="45" cy="55" r="4.2" fill="#1e293b"/>
+                    <circle cx="43.5" cy="53.5" r="1.5" fill="#FFFFFF"/>
+                    <circle cx="65" cy="55" r="4.2" fill="#1e293b"/>
+                    <circle cx="63.5" cy="53.5" r="1.5" fill="#FFFFFF"/>
+                    <ellipse cx="38.5" cy="62" rx="4.2" ry="2.6" fill="#FF85BD" opacity="0.85"/>
+                    <ellipse cx="71.5" cy="62" rx="4.2" ry="2.6" fill="#FF85BD" opacity="0.85"/>
+                    <path d="M50 63 Q55 69 60 63" fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="65" cy="55" r="10.5" fill="rgba(177, 228, 227, 0.38)" stroke="#FF85BD" stroke-width="3.2"/>
+                    <circle cx="65" cy="55" r="11.8" fill="none" stroke="#1e293b" stroke-width="1.3"/>
+                    <path d="M76.5 56 Q85 65 80 78" fill="none" stroke="#FF85BD" stroke-width="2.4" stroke-dasharray="2.5,2"/>
+                    <path d="M45 91 L43 97 M65 91 L67 97" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold font-cute text-slate-900 mb-2">ยินดีต้อนรับสู่ DekDurian!</h3>
+            <p class="text-slate-600 text-sm sm:text-base max-w-md mx-auto mb-6 leading-relaxed">
+                ตอนนี้คลังข้อสอบของคุณยังว่างอยู่ มาเริ่มต้นเพิ่มชุดข้อสอบเข้า ม.1 (วิทย์, คณิต, อังกฤษ, ไทย, สังคม) หรือสร้างข้อสอบปรนัยไว้ฝึกทำเองได้เลย!
+            </p>
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="openAddModal()" class="bg-accent-primary text-slate-900 font-bold px-6 py-3 rounded-2xl neo-btn text-sm inline-flex items-center gap-2">
+                    <span>➕</span>
+                    <span>เพิ่มชุดข้อสอบชุดแรก</span>
+                </button>
+                <button onclick="loadSamplePreview()" class="bg-[#FCEEA8] text-slate-900 font-bold px-5 py-3 rounded-2xl neo-btn text-sm inline-flex items-center gap-2">
+                    <span>✨</span>
+                    <span>โหลดชุดตัวอย่างทดสอบระบบ</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (#B1E4E3 Secondary Container) -->
+    <footer class="bg-accent-secondary border-t-[3px] border-slate-800 text-slate-800 py-5 text-center text-xs sm:text-sm font-semibold relative z-10 mt-12 transition-colors">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <p>🍈 <strong>DekDurian</strong> — คลังข้อสอบเข้าศึกษาต่อระดับชั้นมัธยมศึกษาปีที่ 1</p>
+            <p class="text-slate-700">สู้ๆ นะว่าที่นักเรียน ม.1 คนเก่ง! ✨</p>
+        </div>
+    </footer>
+
+    <!-- Modal: Add / Edit Exam -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white neo-box max-w-2xl w-full p-6 sm:p-7 animate-pop max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 mb-5 border-b-2 border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 bg-accent-primary rounded-xl border-2 border-slate-800 flex items-center justify-center text-lg">📝</span>
+                    <div>
+                        <h3 id="modal-form-title" class="text-lg sm:text-xl font-bold text-slate-900">เพิ่มชุดข้อสอบเข้า ม.1</h3>
+                        <p class="text-xs text-slate-500">เลือกบันทึกแบบแนบลิงก์ไฟล์ หรือสร้างข้อสอบทำบนเว็บ</p>
+                    </div>
+                </div>
+                <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF85BD] border-2 border-slate-800 font-bold text-slate-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <form id="exam-form" onsubmit="saveExamSubmit(event)" class="space-y-4">
+                <input type="hidden" id="edit-exam-id" value="">
+                <!-- Basic Info -->
+                <div>
+                    <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-1">ชื่อชุดข้อสอบ <span class="text-rose-500">*</span></label>
+                    <input type="text" id="form-title" required placeholder="เช่น แนวข้อสอบเข้า ม.1 ห้องเรียนพิเศษ GIFTED ปี 2569" class="w-full px-4 py-2.5 bg-[#FCEEA8]/40 border-2 border-slate-800 rounded-xl text-sm focus:bg-white focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-1">รายวิชาหลัก <span class="text-rose-500">*</span></label>
+                        <select id="form-subject" class="w-full px-3 py-2.5 bg-white border-2 border-slate-800 rounded-xl text-sm font-medium focus:outline-none">
+                            <option value="วิทยาศาสตร์">🧪 วิทยาศาสตร์</option>
+                            <option value="คณิตศาสตร์">📐 คณิตศาสตร์</option>
+                            <option value="ภาษาอังกฤษ">🔤 ภาษาอังกฤษ</option>
+                            <option value="ภาษาไทย">📖 ภาษาไทย</option>
+                            <option value="สังคมศึกษา">🌍 สังคมศึกษา</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-1">โรงเรียน / ปี พ.ศ.</label>
+                        <input type="text" id="form-source" placeholder="เช่น สวนกุหลาบ / 2569" class="w-full px-3 py-2.5 bg-white border-2 border-slate-800 rounded-xl text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-1">ระดับความยาก</label>
+                        <select id="form-difficulty" class="w-full px-3 py-2.5 bg-white border-2 border-slate-800 rounded-xl text-sm font-medium focus:outline-none">
+                            <option value="พื้นฐาน">🌱 พื้นฐาน</option>
+                            <option value="ปานกลาง">⭐ ปานกลาง</option>
+                            <option value="เข้มข้น (GIFTED/EP)">🔥 เข้มข้น (GIFTED/EP)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Exam Mode Toggle: External Link vs Interactive Quiz -->
+                <div class="bg-accent-secondary/50 p-3.5 rounded-2xl border-2 border-slate-800">
+                    <label class="block text-xs font-bold text-slate-800 mb-2">รูปแบบข้อสอบ:</label>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button type="button" onclick="switchExamType('link')" id="mode-btn-link" class="py-2 px-3 bg-accent-primary text-slate-900 font-bold rounded-xl border-2 border-slate-800 text-xs sm:text-sm">
+                            🔗 แนบลิงก์ไฟล์ / PDF
+                        </button>
+                        <button type="button" onclick="switchExamType('quiz')" id="mode-btn-quiz" class="py-2 px-3 bg-white text-slate-700 font-semibold rounded-xl border-2 border-slate-800 text-xs sm:text-sm">
+                            ✍️ สร้างข้อสอบทำบนเว็บ
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section A: External Link Mode -->
+                <div id="section-link" class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">จำนวนข้อ</label>
+                            <input type="number" id="form-count" min="1" max="500" value="30" class="w-full px-3 py-2 bg-white border-2 border-slate-800 rounded-xl text-sm">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-bold text-slate-800 mb-1">ลิงก์ไฟล์ข้อสอบ (Google Drive / เว็บไซต์)</label>
+                            <input type="url" id="form-link" placeholder="https://..." class="w-full px-3 py-2 bg-white border-2 border-slate-800 rounded-xl text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-800 mb-1">ลิงก์เฉลย (ถ้ามี)</label>
+                        <input type="url" id="form-answer-link" placeholder="https://..." class="w-full px-3 py-2 bg-white border-2 border-slate-800 rounded-xl text-sm">
+                    </div>
+                </div>
+
+                <!-- Section B: Built-in Interactive Quiz Builder -->
+                <div id="section-quiz" class="hidden space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-800">รายการคำถามปรนัย (4 ตัวเลือก)</span>
+                        <button type="button" onclick="addQuestionField()" class="bg-[#FCEEA8] hover:bg-[#FF85BD] text-slate-900 font-bold text-xs px-3 py-1.5 rounded-xl border-2 border-slate-800">
+                            + เพิ่มข้อคำถาม
+                        </button>
+                    </div>
+                    <div id="questions-container" class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                        <!-- Dynamic question builder blocks -->
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t-2 border-slate-800">
+                    <button type="button" onclick="closeAddModal()" class="px-5 py-2.5 bg-white text-slate-700 font-semibold rounded-xl neo-btn text-sm">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 bg-accent-primary text-slate-900 font-bold rounded-xl neo-btn text-sm">💾 บันทึกชุดข้อสอบ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Interactive Quiz Player -->
+    <div id="quiz-player-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white neo-box max-w-2xl w-full p-6 sm:p-8 animate-pop max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 mb-5 border-b-2 border-slate-800">
+                <div>
+                    <span id="player-subject-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-accent-secondary border border-slate-800">วิชา</span>
+                    <h3 id="player-title" class="text-lg sm:text-xl font-bold text-slate-900 mt-1.5">ชื่อชุดข้อสอบ</h3>
+                </div>
+                <button onclick="closeQuizPlayer()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-[#FF85BD] border-2 border-slate-800 font-bold text-slate-800 flex items-center justify-center">&times;</button>
+            </div>
+
+            <div id="player-body" class="space-y-5">
+                <!-- Quiz questions injected here -->
+            </div>
+
+            <div id="player-result" class="hidden bg-[#FCEEA8] neo-box p-6 text-center my-4">
+                <div class="text-4xl mb-2">🎉</div>
+                <h4 class="text-xl font-bold text-slate-900">สรุปผลคะแนนการทำข้อสอบ</h4>
+                <p id="player-score-text" class="text-2xl font-bold text-[#d63384] my-2">0 / 0 คะแนน</p>
+                <p id="player-feedback" class="text-sm text-slate-700"></p>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-5 mt-5 border-t-2 border-slate-800">
+                <button onclick="closeQuizPlayer()" class="px-5 py-2.5 bg-white text-slate-700 font-semibold rounded-xl neo-btn text-sm">ปิดหน้าต่าง</button>
+                <button id="submit-quiz-btn" onclick="gradeQuiz()" class="px-6 py-2.5 bg-accent-primary text-slate-900 font-bold rounded-xl neo-btn text-sm">✅ ส่งคำตอบและตรวจคะแนน</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- State Management (Starts empty with NO preloaded exams) ---
+        let exams = JSON.parse(localStorage.getItem('dekdurian_exams_data')) || [];
+        let uiPrefs = JSON.parse(localStorage.getItem('dekdurian_ui_prefs')) || {
+            colorTheme: 'pink',
+            bgPattern: 'dots',
+            ambientDurians: false,
+            cardRadius: '1.5rem',
+            cardShadow: '4px 4px 0px #1e293b',
+            slogan: 'คลังข้อสอบเข้า ม.1 สุดคิ้วท์ เตรียมพร้อมพิชิตโรงเรียนในฝัน!',
+            stickyNotes: [],
+            stickers: []
+        };
+
+        let activeSubject = 'all';
+        let currentExamMode = 'link';
+        let activeQuizExam = null;
+
+        function savePrefs() {
+            localStorage.setItem('dekdurian_ui_prefs', JSON.stringify(uiPrefs));
+        }
+
+        function saveExamsData() {
+            localStorage.setItem('dekdurian_exams_data', JSON.stringify(exams));
+        }
+
+        // --- Customizer Controls ---
+        function toggleCustomizer() {
+            const panel = document.getElementById('customizer-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function setColorTheme(theme) {
+            uiPrefs.colorTheme = theme;
+            savePrefs();
+            applyPreferences();
+        }
+
+        function setBgPattern(pattern) {
+            uiPrefs.bgPattern = pattern;
+            savePrefs();
+            applyPreferences();
+        }
+
+        function toggleAmbientDurians(enabled) {
+            uiPrefs.ambientDurians = enabled;
+            savePrefs();
+            renderAmbientDurians();
+        }
+
+        function setCardStyle(radius, shadow) {
+            uiPrefs.cardRadius = radius;
+            uiPrefs.cardShadow = shadow;
+            savePrefs();
+            applyPreferences();
+        }
+
+        function updateSlogan(text) {
+            uiPrefs.slogan = text.trim() || 'คลังข้อสอบเข้า ม.1 สุดคิ้วท์ เตรียมพร้อมพิชิตโรงเรียนในฝัน!';
+            document.getElementById('header-slogan').textContent = uiPrefs.slogan;
+            savePrefs();
+        }
+
+        // --- Sticky Notes / Motivational Quotes ---
+        function addStickyNote() {
+            const input = document.getElementById('new-note-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const colors = ['#FF85BD', '#B1E4E3', '#FCEEA8', '#FFFFFF'];
+            const randomColor = colors[uiPrefs.stickyNotes.length % colors.length];
+            uiPrefs.stickyNotes.push({
+                id: Date.now(),
+                text,
+                color: randomColor
+            });
+            input.value = '';
+            savePrefs();
+            renderStickyNotes();
+        }
+
+        function promptQuickStickyNote() {
+            toggleCustomizer();
+            setTimeout(() => {
+                document.getElementById('new-note-input').focus();
+            }, 100);
+        }
+
+        function removeStickyNote(id) {
+            uiPrefs.stickyNotes = uiPrefs.stickyNotes.filter(n => n.id !== id);
+            savePrefs();
+            renderStickyNotes();
+        }
+
+        function renderStickyNotes() {
+            const board = document.getElementById('sticky-notes-board');
+            const grid = document.getElementById('sticky-notes-grid');
+            if (!uiPrefs.stickyNotes || uiPrefs.stickyNotes.length === 0) {
+                board.classList.add('hidden');
+                return;
+            }
+            board.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            uiPrefs.stickyNotes.forEach(note => {
+                const card = document.createElement('div');
+                card.style.backgroundColor = note.color;
+                card.className = 'neo-box p-3.5 relative flex items-start justify-between gap-2 animate-pop';
+                card.innerHTML = `
+                    <p class="font-handwriting font-semibold text-slate-900 text-xs sm:text-sm leading-relaxed">
+                        📌 ${escapeHTML(note.text)}
+                    </p>
+                    <button onclick="removeStickyNote(${note.id})" class="text-slate-700 hover:text-rose-600 font-bold text-sm leading-none shrink-0" title="ลบโน้ต">&times;</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- Floating Ambient Durians & Draggable Stickers ---
+        function getMonocleDurianSVG(sizeClass = 'w-12 h-12') {
+            return `
+                <svg viewBox="0 0 110 110" class="${sizeClass}" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M51 20 C51 12, 59 9, 63 12 C60 15, 58 18, 58 22 Z" fill="#6D4C41" stroke="#1e293b" stroke-width="3" stroke-linejoin="round"/>
+                    <g fill="#7CB342" stroke="#1e293b" stroke-width="3" stroke-linejoin="round">
+                        <polygon points="44,23 50,13 56,23"/>
+                        <polygon points="56,23 62,14 68,25"/>
+                        <polygon points="31,28 35,17 43,25"/>
+                        <polygon points="68,26 76,18 79,30"/>
+                        <polygon points="23,37 14,32 21,45"/>
+                        <polygon points="19,50 9,50 19,60"/>
+                        <polygon points="21,64 12,69 24,74"/>
+                        <polygon points="28,78 21,86 35,85"/>
+                        <polygon points="87,37 96,32 89,45"/>
+                        <polygon points="91,50 101,50 91,60"/>
+                        <polygon points="89,64 98,69 86,74"/>
+                        <polygon points="82,78 89,86 75,85"/>
+                        <polygon points="38,87 37,97 47,90"/>
+                        <polygon points="50,91 55,100 60,91"/>
+                        <polygon points="63,90 73,97 72,87"/>
+                    </g>
+                    <ellipse cx="55" cy="56" rx="34" ry="35" fill="#9CCC65" stroke="#1e293b" stroke-width="3.2"/>
+                    <ellipse cx="55" cy="59" rx="24" ry="21" fill="#FCEEA8" stroke="#1e293b" stroke-width="2.5"/>
+                    <circle cx="45" cy="55" r="4.5" fill="#1e293b"/>
+                    <circle cx="65" cy="55" r="4.5" fill="#1e293b"/>
+                    <ellipse cx="38.5" cy="62" rx="4.2" ry="2.6" fill="#FF85BD"/>
+                    <ellipse cx="71.5" cy="62" rx="4.2" ry="2.6" fill="#FF85BD"/>
+                    <path d="M50 63 Q55 69 60 63" fill="none" stroke="#1e293b" stroke-width="2.8" stroke-linecap="round"/>
+                    <circle cx="65" cy="55" r="10.5" fill="rgba(177, 228, 227, 0.45)" stroke="#FF85BD" stroke-width="3.5"/>
+                    <path d="M76.5 56 Q85 65 80 78" fill="none" stroke="#FF85BD" stroke-width="2.6" stroke-dasharray="2.5,2"/>
+                </svg>
+            `;
+        }
+
+        function renderAmbientDurians() {
+            const layer = document.getElementById('ambient-durian-layer');
+            if (!uiPrefs.ambientDurians) {
+                layer.classList.add('hidden');
+                layer.innerHTML = '';
+                return;
+            }
+            layer.classList.remove('hidden');
+            const positions = [
+                { top: '14%', left: '4%', rot: '-12deg', delay: '0s' },
+                { top: '26%', right: '5%', rot: '14deg', delay: '1.2s' },
+                { bottom: '18%', left: '6%', rot: '10deg', delay: '2.1s' },
+                { bottom: '14%', right: '7%', rot: '-15deg', delay: '0.7s' },
+                { top: '55%', left: '48%', rot: '8deg', delay: '1.7s' }
+            ];
+            layer.innerHTML = positions.map(p => `
+                <div class="ambient-durian" style="${p.top ? 'top:'+p.top+';' : ''}${p.bottom ? 'bottom:'+p.bottom+';' : ''}${p.left ? 'left:'+p.left+';' : ''}${p.right ? 'right:'+p.right+';' : ''}--rot:${p.rot};animation-delay:${p.delay};">
+                    ${getMonocleDurianSVG('w-20 h-20')}
+                </div>
+            `).join('');
+        }
+
+        function spawnSticker(type) {
+            const id = Date.now() + Math.random();
+            const x = Math.floor(Math.random() * 75) + 10;
+            const y = Math.floor(Math.random() * 65) + 18;
+            const rot = Math.floor(Math.random() * 30) - 15;
+
+            uiPrefs.stickers.push({ id, type, x, y, rot });
+            savePrefs();
+            renderStickers();
+        }
+
+        function clearStickers() {
+            uiPrefs.stickers = [];
+            savePrefs();
+            renderStickers();
+        }
+
+        function renderStickers() {
+            const layer = document.getElementById('sticker-layer');
+            layer.innerHTML = '';
+
+            uiPrefs.stickers.forEach(st => {
+                const el = document.createElement('div');
+                el.className = 'sticker-item pointer-events-auto text-3xl sm:text-4xl';
+                el.style.left = st.x + 'vw';
+                el.style.top = st.y + 'vh';
+                el.style.setProperty('--rot', st.rot + 'deg');
+                el.title = 'ลากเพื่อย้าย หรือดับเบิลคลิกเพื่อลบสติ๊กเกอร์';
+
+                const symbol = st.type || st.emoji;
+                if (symbol === 'durian-monocle') {
+                    el.innerHTML = getMonocleDurianSVG('w-12 h-12 sm:w-14 sm:h-14');
+                } else {
+                    el.textContent = symbol;
+                }
+
+                el.addEventListener('dblclick', () => {
+                    uiPrefs.stickers = uiPrefs.stickers.filter(s => s.id !== st.id);
+                    savePrefs();
+                    renderStickers();
+                });
+
+                let isDragging = false;
+                const onStart = () => { isDragging = true; };
+                const onMove = (e) => {
+                    if (!isDragging) return;
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    const vw = (clientX / window.innerWidth) * 100;
+                    const vh = (clientY / window.innerHeight) * 100;
+                    el.style.left = Math.max(2, Math.min(92, vw)) + 'vw';
+                    el.style.top = Math.max(10, Math.min(90, vh)) + 'vh';
+                    st.x = parseFloat(el.style.left);
+                    st.y = parseFloat(el.style.top);
+                };
+                const onEnd = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        savePrefs();
+                    }
+                };
+
+                el.addEventListener('mousedown', onStart);
+                window.addEventListener('mousemove', onMove);
+                window.addEventListener('mouseup', onEnd);
+
+                el.addEventListener('touchstart', onStart, { passive: true });
+                window.addEventListener('touchmove', onMove, { passive: true });
+                window.addEventListener('touchend', onEnd);
+
+                layer.appendChild(el);
+            });
+        }
+
+        function applyPreferences() {
+            // Apply color palette emphasis strictly across #FCEEA8, #FF85BD, #B1E4E3
+            const root = document.documentElement;
+            if (uiPrefs.colorTheme === 'mint') {
+                root.style.setProperty('--bg-main', '#FCEEA8');
+                root.style.setProperty('--accent-primary', '#B1E4E3');
+                root.style.setProperty('--accent-secondary', '#FF85BD');
+            } else if (uiPrefs.colorTheme === 'cream') {
+                root.style.setProperty('--bg-main', '#B1E4E3');
+                root.style.setProperty('--accent-primary', '#FCEEA8');
+                root.style.setProperty('--accent-secondary', '#FF85BD');
+            } else {
+                // Default 'pink' theme
+                root.style.setProperty('--bg-main', '#FCEEA8');
+                root.style.setProperty('--accent-primary', '#FF85BD');
+                root.style.setProperty('--accent-secondary', '#B1E4E3');
+            }
+
+            const body = document.getElementById('app-body');
+            body.classList.remove('bg-pattern-plain', 'bg-pattern-dots', 'bg-pattern-grid');
+            body.classList.add(`bg-pattern-${uiPrefs.bgPattern}`);
+
+            root.style.setProperty('--card-radius', uiPrefs.cardRadius);
+            root.style.setProperty('--card-shadow', uiPrefs.cardShadow || '4px 4px 0px #1e293b');
+            document.getElementById('header-slogan').textContent = uiPrefs.slogan;
+            document.getElementById('slogan-input').value = uiPrefs.slogan;
+            document.getElementById('toggle-ambient-durians').checked = !!uiPrefs.ambientDurians;
+
+            // Update customizer button states
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('bg-[#FF85BD]', 'font-bold');
+                btn.classList.add('bg-white', 'font-semibold');
+            });
+            const activeThemeBtn = document.getElementById(`theme-btn-${uiPrefs.colorTheme || 'pink'}`);
+            if (activeThemeBtn) {
+                activeThemeBtn.classList.remove('bg-white', 'font-semibold');
+                activeThemeBtn.classList.add('bg-[#FF85BD]', 'font-bold');
+            }
+
+            document.querySelectorAll('.bg-btn').forEach(btn => {
+                btn.classList.remove('bg-[#FF85BD]', 'font-bold');
+                btn.classList.add('bg-white', 'font-semibold');
+            });
+            const activeBgBtn = document.getElementById(`bg-btn-${uiPrefs.bgPattern}`);
+            if (activeBgBtn) {
+                activeBgBtn.classList.remove('bg-white', 'font-semibold');
+                activeBgBtn.classList.add('bg-[#FF85BD]', 'font-bold');
+            }
+
+            document.querySelectorAll('.rad-btn').forEach(btn => {
+                btn.classList.remove('bg-[#FF85BD]', 'font-bold');
+                btn.classList.add('bg-white', 'font-semibold');
+            });
+            const activeRadBtn = document.getElementById(`rad-btn-${uiPrefs.cardRadius}`);
+            if (activeRadBtn) {
+                activeRadBtn.classList.remove('bg-white', 'font-semibold');
+                activeRadBtn.classList.add('bg-[#FF85BD]', 'font-bold');
+            }
+
+            renderAmbientDurians();
+            renderStickyNotes();
+            renderStickers();
+        }
+
+        // --- Subject Filtering & Rendering ---
+        function getSubjectBadge(subject) {
+            const map = {
+                'วิทยาศาสตร์': { icon: '🧪', bg: 'bg-[#B1E4E3]' },
+                'คณิตศาสตร์': { icon: '📐', bg: 'bg-[#FCEEA8]' },
+                'ภาษาอังกฤษ': { icon: '🔤', bg: 'bg-[#FF85BD]' },
+                'ภาษาไทย': { icon: '📖', bg: 'bg-[#FCEEA8]' },
+                'สังคมศึกษา': { icon: '🌍', bg: 'bg-[#B1E4E3]' }
+            };
+            return map[subject] || { icon: '📚', bg: 'bg-white' };
+        }
+
+        function filterSubject(subject) {
+            activeSubject = subject;
+            document.querySelectorAll('.subject-tab').forEach(tab => {
+                tab.classList.remove('bg-accent-primary', 'font-bold');
+                tab.classList.add('bg-white', 'font-semibold');
+            });
+            const currentTab = document.getElementById(`tab-${subject}`);
+            if (currentTab) {
+                currentTab.classList.remove('bg-white', 'font-semibold');
+                currentTab.classList.add('bg-accent-primary', 'font-bold');
+            }
+            renderExams();
+        }
+
+        function renderExams() {
+            const grid = document.getElementById('exam-grid');
+            const emptyState = document.getElementById('empty-state');
+            const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+            const diffFilter = document.getElementById('difficulty-filter').value;
+
+            document.getElementById('total-count').textContent = exams.length;
+
+            const filtered = exams.filter(item => {
+                const matchesSubject = activeSubject === 'all' || item.subject === activeSubject;
+                const matchesDiff = diffFilter === 'all' || item.difficulty === diffFilter;
+                const matchesSearch = item.title.toLowerCase().includes(searchQuery) || 
+                                      (item.source && item.source.toLowerCase().includes(searchQuery));
+                return matchesSubject && matchesDiff && matchesSearch;
+            });
+
+            grid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach(exam => {
+                const badge = getSubjectBadge(exam.subject);
+                const isQuiz = exam.mode === 'quiz';
+                const qCount = isQuiz ? exam.questions.length : exam.count;
+
+                const card = document.createElement('div');
+                card.className = 'bg-white neo-box p-5 flex flex-col justify-between animate-pop';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-3">
+                            <span class="${badge.bg} text-slate-900 text-xs font-bold px-3 py-1 rounded-full border-2 border-slate-800 inline-flex items-center gap-1">
+                                <span>${badge.icon}</span>
+                                <span>${escapeHTML(exam.subject)}</span>
+                            </span>
+                            <span class="text-xs font-semibold bg-slate-100 text-slate-700 px-2.5 py-1 rounded-xl border border-slate-800">
+                                ${escapeHTML(exam.difficulty)}
+                            </span>
+                        </div>
+
+                        <h3 class="font-bold text-lg text-slate-900 mb-2 leading-snug">${escapeHTML(exam.title)}</h3>
+                        
+                        <div class="space-y-1 text-xs text-slate-600 mb-5">
+                            ${exam.source ? `<p>🏫 แหล่งที่มา/ปี: <strong class="text-slate-800">${escapeHTML(exam.source)}</strong></p>` : ''}
+                            <p>📝 จำนวนข้อสอบ: <strong class="text-slate-800">${qCount} ข้อ</strong> (${isQuiz ? 'ทำบนเว็บได้ทันที' : 'ไฟล์/ลิงก์ภายนอก'})</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-3.5 border-t-2 border-slate-800 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            ${isQuiz ? `
+                                <button onclick="openQuizPlayer(${exam.id})" class="bg-accent-primary text-slate-900 font-bold text-xs px-3.5 py-2 rounded-xl neo-btn inline-flex items-center gap-1">
+                                    <span>✍️</span> <span>เริ่มทำข้อสอบ</span>
+                                </button>
+                            ` : `
+                                ${exam.link ? `
+                                    <a href="${escapeHTML(exam.link)}" target="_blank" rel="noopener noreferrer" class="bg-accent-secondary text-slate-900 font-bold text-xs px-3.5 py-2 rounded-xl neo-btn inline-flex items-center gap-1">
+                                        <span>📄</span> <span>เปิดข้อสอบ</span>
+                                    </a>
+                                ` : '<span class="text-xs text-slate-400 italic">ไม่มีลิงก์ข้อสอบ</span>'}
+                                ${exam.answerLink ? `
+                                    <a href="${escapeHTML(exam.answerLink)}" target="_blank" rel="noopener noreferrer" class="bg-[#FCEEA8] text-slate-900 font-bold text-xs px-3 py-2 rounded-xl neo-btn">
+                                        🔑 เฉลย
+                                    </a>
+                                ` : ''}
+                            `}
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="openEditModal(${exam.id})" class="text-slate-500 hover:text-slate-900 font-semibold text-xs px-2 py-1.5 rounded-lg hover:bg-[#FCEEA8] transition" title="แก้ไขชุดข้อสอบ">
+                                ✏️
+                            </button>
+                            <button onclick="askDeleteExam(${exam.id})" class="text-slate-400 hover:text-rose-600 font-semibold text-xs px-2 py-1.5 rounded-lg hover:bg-rose-50 transition" title="ลบชุดข้อสอบ">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- Sample Preview Loader (Optional button in empty state) ---
+        function loadSamplePreview() {
+            exams = [
+                {
+                    id: Date.now() + 1,
+                    mode: 'quiz',
+                    title: 'แนวข้อสอบวิทยาศาสตร์เข้า ม.1 (ชุดทดลองทำบนเว็บ)',
+                    subject: 'วิทยาศาสตร์',
+                    source: 'DekDurian Mock Test',
+                    difficulty: 'ปานกลาง',
+                    questions: [
+                        {
+                            question: 'อวัยวะใดในร่างกายมนุษย์ทำหน้าที่หลักในการดูดซึมสารอาหารเข้าสู่กระแสเลือด?',
+                            options: ['กระเพาะอาหาร', 'ลำไส้เล็ก', 'ลำไส้ใหญ่', 'หลอดอาหาร'],
+                            correct: 1
+                        },
+                        {
+                            question: 'ดาวเคราะห์ดวงใดในระบบสุริยะที่ได้รับฉายาว่า "ดาวเคราะห์สีแดง"?',
+                            options: ['ดาวศุกร์', 'ดาวอังคาร', 'ดาวพฤหัสบดี', 'ดาวเสาร์'],
+                            correct: 1
+                        }
+                    ]
+                },
+                {
+                    id: Date.now() + 2,
+                    mode: 'link',
+                    title: 'รวมโจทย์คณิตศาสตร์สอบเข้า ม.1 ห้องเรียนพิเศษ GIFTED',
+                    subject: 'คณิตศาสตร์',
+                    source: 'คลังข้อสอบเตรียมสอบ ม.1',
+                    difficulty: 'เข้มข้น (GIFTED/EP)',
+                    count: 30,
+                    link: 'https://www.google.com',
+                    answerLink: 'https://www.google.com'
+                }
+            ];
+            saveExamsData();
+            renderExams();
+        }
+
+        // --- Add / Edit Exam Modal & Builder ---
+        function openAddModal() {
+            document.getElementById('exam-form').reset();
+            document.getElementById('edit-exam-id').value = '';
+            document.getElementById('modal-form-title').textContent = 'เพิ่มชุดข้อสอบเข้า ม.1';
+            switchExamType('link');
+            document.getElementById('questions-container').innerHTML = '';
+            addQuestionField();
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function openEditModal(id) {
+            const exam = exams.find(e => e.id === id);
+            if (!exam) return;
+
+            document.getElementById('exam-form').reset();
+            document.getElementById('edit-exam-id').value = exam.id;
+            document.getElementById('modal-form-title').textContent = 'แก้ไขชุดข้อสอบเข้า ม.1';
+            document.getElementById('form-title').value = exam.title;
+            document.getElementById('form-subject').value = exam.subject;
+            document.getElementById('form-source').value = exam.source || '';
+            document.getElementById('form-difficulty').value = exam.difficulty;
+
+            if (exam.mode === 'quiz') {
+                switchExamType('quiz');
+                const container = document.getElementById('questions-container');
+                container.innerHTML = '';
+                exam.questions.forEach(q => {
+                    addQuestionField(q);
+                });
+            } else {
+                switchExamType('link');
+                document.getElementById('form-count').value = exam.count || 30;
+                document.getElementById('form-link').value = exam.link || '';
+                document.getElementById('form-answer-link').value = exam.answerLink || '';
+            }
+
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAddModal() {
+            const modal = document.getElementById('add-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function switchExamType(mode) {
+            currentExamMode = mode;
+            const linkSec = document.getElementById('section-link');
+            const quizSec = document.getElementById('section-quiz');
+            const btnLink = document.getElementById('mode-btn-link');
+            const btnQuiz = document.getElementById('mode-btn-quiz');
+
+            if (mode === 'link') {
+                linkSec.classList.remove('hidden');
+                quizSec.classList.add('hidden');
+                btnLink.className = 'py-2 px-3 bg-accent-primary text-slate-900 font-bold rounded-xl border-2 border-slate-800 text-xs sm:text-sm';
+                btnQuiz.className = 'py-2 px-3 bg-white text-slate-700 font-semibold rounded-xl border-2 border-slate-800 text-xs sm:text-sm';
+            } else {
+                linkSec.classList.add('hidden');
+                quizSec.classList.remove('hidden');
+                btnQuiz.className = 'py-2 px-3 bg-accent-primary text-slate-900 font-bold rounded-xl border-2 border-slate-800 text-xs sm:text-sm';
+                btnLink.className = 'py-2 px-3 bg-white text-slate-700 font-semibold rounded-xl border-2 border-slate-800 text-xs sm:text-sm';
+            }
+        }
+
+        function addQuestionField(existingData = null) {
+            const container = document.getElementById('questions-container');
+            const index = container.children.length + 1;
+            const block = document.createElement('div');
+            block.className = 'question-block bg-[#FCEEA8]/50 p-3.5 rounded-2xl border-2 border-slate-800 space-y-2';
+            block.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-slate-900">ข้อที่ ${index}</span>
+                    ${index > 1 ? `<button type="button" onclick="this.closest('.question-block').remove()" class="text-xs text-rose-600 font-bold">ลบข้อนี้</button>` : ''}
+                </div>
+                <input type="text" class="q-text w-full px-3 py-1.5 bg-white border-2 border-slate-800 rounded-xl text-xs" placeholder="พิมพ์โจทย์คำถาม..." value="${existingData ? escapeHTML(existingData.question) : ''}">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" class="q-opt-0 px-2.5 py-1.5 bg-white border border-slate-800 rounded-lg text-xs" placeholder="ก. ตัวเลือกที่ 1" value="${existingData ? escapeHTML(existingData.options[0]) : ''}">
+                    <input type="text" class="q-opt-1 px-2.5 py-1.5 bg-white border border-slate-800 rounded-lg text-xs" placeholder="ข. ตัวเลือกที่ 2" value="${existingData ? escapeHTML(existingData.options[1]) : ''}">
+                    <input type="text" class="q-opt-2 px-2.5 py-1.5 bg-white border border-slate-800 rounded-lg text-xs" placeholder="ค. ตัวเลือกที่ 3" value="${existingData ? escapeHTML(existingData.options[2]) : ''}">
+                    <input type="text" class="q-opt-3 px-2.5 py-1.5 bg-white border border-slate-800 rounded-lg text-xs" placeholder="ง. ตัวเลือกที่ 4" value="${existingData ? escapeHTML(existingData.options[3]) : ''}">
+                </div>
+                <div class="flex items-center gap-2 pt-1">
+                    <label class="text-xs font-bold text-slate-800">เฉลยข้อที่ถูก:</label>
+                    <select class="q-correct px-2.5 py-1 bg-accent-secondary border border-slate-800 rounded-lg text-xs font-bold">
+                        <option value="0" ${existingData && existingData.correct === 0 ? 'selected' : ''}>ก. ตัวเลือกที่ 1</option>
+                        <option value="1" ${existingData && existingData.correct === 1 ? 'selected' : ''}>ข. ตัวเลือกที่ 2</option>
+                        <option value="2" ${existingData && existingData.correct === 2 ? 'selected' : ''}>ค. ตัวเลือกที่ 3</option>
+                        <option value="3" ${existingData && existingData.correct === 3 ? 'selected' : ''}>ง. ตัวเลือกที่ 4</option>
+                    </select>
+                </div>
+            `;
+            container.appendChild(block);
+        }
+
+        function saveExamSubmit(event) {
+            event.preventDefault();
+            const editId = document.getElementById('edit-exam-id').value;
+            const title = document.getElementById('form-title').value.trim();
+            const subject = document.getElementById('form-subject').value;
+            const source = document.getElementById('form-source').value.trim();
+            const difficulty = document.getElementById('form-difficulty').value;
+
+            let examObj = null;
+
+            if (currentExamMode === 'link') {
+                const count = parseInt(document.getElementById('form-count').value, 10) || 1;
+                const link = document.getElementById('form-link').value.trim();
+                const answerLink = document.getElementById('form-answer-link').value.trim();
+
+                examObj = {
+                    id: editId ? Number(editId) : Date.now(),
+                    mode: 'link',
+                    title,
+                    subject,
+                    source,
+                    difficulty,
+                    count,
+                    link,
+                    answerLink
+                };
+            } else {
+                const blocks = document.querySelectorAll('.question-block');
+                const questions = [];
+                blocks.forEach(b => {
+                    const qText = b.querySelector('.q-text').value.trim();
+                    const opts = [
+                        b.querySelector('.q-opt-0').value.trim() || 'ตัวเลือก ก',
+                        b.querySelector('.q-opt-1').value.trim() || 'ตัวเลือก ข',
+                        b.querySelector('.q-opt-2').value.trim() || 'ตัวเลือก ค',
+                        b.querySelector('.q-opt-3').value.trim() || 'ตัวเลือก ง'
+                    ];
+                    const correct = parseInt(b.querySelector('.q-correct').value, 10);
+                    if (qText) {
+                        questions.push({ question: qText, options: opts, correct });
+                    }
+                });
+
+                if (questions.length === 0) {
+                    showAlert('กรุณากรอกโจทย์คำถามอย่างน้อย 1 ข้อนะครับ 🍈');
+                    return;
+                }
+
+                examObj = {
+                    id: editId ? Number(editId) : Date.now(),
+                    mode: 'quiz',
+                    title,
+                    subject,
+                    source,
+                    difficulty,
+                    questions
+                };
+            }
+
+            if (editId) {
+                exams = exams.map(item => item.id === Number(editId) ? examObj : item);
+            } else {
+                exams.unshift(examObj);
+            }
+
+            saveExamsData();
+            renderExams();
+            closeAddModal();
+        }
+
+        // --- Interactive Quiz Player ---
+        function openQuizPlayer(id) {
+            const exam = exams.find(e => e.id === id);
+            if (!exam || !exam.questions) return;
+
+            activeQuizExam = exam;
+            document.getElementById('player-subject-badge').textContent = exam.subject;
+            document.getElementById('player-title').textContent = exam.title;
+            document.getElementById('player-result').classList.add('hidden');
+            document.getElementById('submit-quiz-btn').classList.remove('hidden');
+
+            const body = document.getElementById('player-body');
+            body.innerHTML = '';
+
+            const labels = ['ก.', 'ข.', 'ค.', 'ง.'];
+            exam.questions.forEach((q, qIdx) => {
+                const qCard = document.createElement('div');
+                qCard.className = 'bg-[#FCEEA8]/40 p-4 rounded-2xl border-2 border-slate-800';
+                qCard.innerHTML = `
+                    <p class="font-bold text-slate-900 text-sm sm:text-base mb-3">${qIdx + 1}. ${escapeHTML(q.question)}</p>
+                    <div class="space-y-2">
+                        ${q.options.map((opt, oIdx) => `
+                            <label id="opt-label-${qIdx}-${oIdx}" class="flex items-center gap-2.5 p-2.5 bg-white rounded-xl border-2 border-slate-800 cursor-pointer hover:bg-[#B1E4E3]/40 transition text-xs sm:text-sm">
+                                <input type="radio" name="quiz-q-${qIdx}" value="${oIdx}" class="accent-[#FF85BD] w-4 h-4">
+                                <span class="font-bold">${labels[oIdx]}</span>
+                                <span>${escapeHTML(opt)}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                body.appendChild(qCard);
+            });
+
+            const modal = document.getElementById('quiz-player-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function gradeQuiz() {
+            if (!activeQuizExam) return;
+            let score = 0;
+            const total = activeQuizExam.questions.length;
+
+            activeQuizExam.questions.forEach((q, qIdx) => {
+                const selected = document.querySelector(`input[name="quiz-q-${qIdx}"]:checked`);
+                const chosenIdx = selected ? parseInt(selected.value, 10) : -1;
+
+                q.options.forEach((_, oIdx) => {
+                    const lbl = document.getElementById(`opt-label-${qIdx}-${oIdx}`);
+                    lbl.classList.remove('bg-white', 'hover:bg-[#B1E4E3]/40');
+                    if (oIdx === q.correct) {
+                        lbl.classList.add('bg-[#B1E4E3]', 'font-bold');
+                    } else if (oIdx === chosenIdx && chosenIdx !== q.correct) {
+                        lbl.classList.add('bg-rose-200');
+                    } else {
+                        lbl.classList.add('bg-white', 'opacity-70');
+                    }
+                });
+
+                if (chosenIdx === q.correct) score++;
+            });
+
+            const resBox = document.getElementById('player-result');
+            resBox.classList.remove('hidden');
+            document.getElementById('player-score-text').textContent = `${score} / ${total} คะแนน`;
+            
+            const pct = (score / total) * 100;
+            let feedback = 'เก่งมาก! รักษาความสม่ำเสมอไว้นะ สอบติด ม.1 แน่นอน! 🌟';
+            if (pct < 50) feedback = 'ไม่เป็นไรนะ ลองทบทวนข้อที่ผิดแล้วมาฝึกทำใหม่อีกรอบ สู้ๆ! 💪';
+            else if (pct < 80) feedback = 'ทำได้ดีเลย! อีกนิดเดียวก็จะเต็มแล้ว ลุยต่อเลย! ✨';
+
+            document.getElementById('player-feedback').textContent = feedback;
+            document.getElementById('submit-quiz-btn').classList.add('hidden');
+            resBox.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function closeQuizPlayer() {
+            const modal = document.getElementById('quiz-player-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            activeQuizExam = null;
+        }
+
+        // --- Custom Dialog (Replaces alert & confirm) ---
+        function showAlert(msg) {
+            document.getElementById('dialog-icon').innerHTML = getMonocleDurianSVG('w-16 h-16');
+            document.getElementById('dialog-title').textContent = 'แจ้งเตือนจาก DekDurian';
+            document.getElementById('dialog-message').textContent = msg;
+            document.getElementById('dialog-cancel-btn').classList.add('hidden');
+            const confirmBtn = document.getElementById('dialog-confirm-btn');
+            confirmBtn.textContent = 'เข้าใจแล้ว';
+            confirmBtn.onclick = closeDialog;
+
+            const modal = document.getElementById('dialog-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function askDeleteExam(id) {
+            document.getElementById('dialog-icon').innerHTML = '<span class="text-4xl">🗑️</span>';
+            document.getElementById('dialog-title').textContent = 'ลบชุดข้อสอบ';
+            document.getElementById('dialog-message').textContent = 'ต้องการลบชุดข้อสอบนี้ออกจากคลังใช่หรือไม่?';
+            document.getElementById('dialog-cancel-btn').classList.remove('hidden');
+            const confirmBtn = document.getElementById('dialog-confirm-btn');
+            confirmBtn.textContent = 'ลบเลย';
+            confirmBtn.onclick = () => {
+                exams = exams.filter(e => e.id !== id);
+                saveExamsData();
+                renderExams();
+                closeDialog();
+            };
+
+            const modal = document.getElementById('dialog-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeDialog() {
+            const modal = document.getElementById('dialog-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        // --- Utility: XSS Prevention ---
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>'"]/g, tag => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[tag]));
+        }
+
+        // Initialize App on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            applyPreferences();
+            renderExams();
+        });
+    </script>
+</body>
+</html>
